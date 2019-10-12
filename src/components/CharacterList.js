@@ -1,47 +1,39 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
+import { Route, Link } from 'react-router-dom';
 import CharacterCard from './CharacterCard';
 
-export default function CharacterList() {
-  // TODO: Add useState to track data from useEffect
-  const [characterList, setCharacterList] = useState([]);
+export default function CharacterList(props) {
+          // TODO: Add useState to track data from useEffect
+          const [characterList, setCharacterList] = useState([]);
 
-  useEffect(() => {
-    // TODO: Add API Request here - must run in `useEffect`
-    //  Important: verify the 2nd `useEffect` parameter: the dependancies array!
+          useEffect(() => {
+        // TODO: Add API Request here - must run in `useEffect`
+        //  Important: verify the 2nd `useEffect` parameter: the dependancies array!
+        async function fetchData() {
+          try {
+            const characterList = await axios.get(
+              "https://rickandmortyapi.com/api/character/"
+            );
+            setCharacterList(characterList.data.results);
+          } catch (err) {
+            console.log(err);
+          }
+        }
+        fetchData();
   }, []);
 
-  useEffect(() => {
-    async function fetchData() {
-      try {
-        const characterList = await axios.get(
-          "https://rickandmortyapi.com/api/character/"
-        );
-        console.log(characterList.data.results);
-        setCharacterList(characterList.data.results);
-      } catch (err) {
-        console.log(err);
-      }
-    }
-    fetchData();
-  }, []);
-
-  return (
-  <section className="character-list">
-      {characterList.map(character => {
-        return (
-          // <CharacterCard
-          //   name={character.name}
-          //   status={character.status}
-          //   species={character.species}
-          //   type={character.type}
-          //   />
-          <div>
-            <h2>{character.name}</h2>
-            <img src={character.image}></img>
+    return (
+      <div className="character-list">
+        {characterList.map(character => (
+          <div className="character-card" key={character.id}>
+             <Link to={`/character-list/${character.id}`}>
+             <h2>{character.name}</h2>
+              <img className="character-list-image" src={character.image} />
+            </Link>            
           </div>
-        );
-      })}
-    </section>
-  );
+    ))}
+    <Route path="/character-list/:id" render={props => <CharacterCard chars={characterList} {...props} />}/>
+      </div>
+    );
 }
