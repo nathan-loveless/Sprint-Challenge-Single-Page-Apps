@@ -1,39 +1,44 @@
 import React, { useEffect, useState } from "react";
 import axios from 'axios';
 import { Route, Link } from 'react-router-dom';
-import CharacterCard from './CharacterCard';
+import styled from "styled-components";
+
+const Container = styled.div.attrs({
+  className: 'character-list'
+})`
+    display: flex;
+    flex-flow: wrap;    
+`;
+
+const Card = styled.div.attrs({
+  className: 'character-card'
+})`
+    margin: 10px;
+    background: lightgray;
+    border: 1px solid black;
+`;
+
+const Title = styled.div.attrs({
+  className: 'title'
+})`
+    background: lightgray;
+`;
+
 
 export default function CharacterList(props) {
           // TODO: Add useState to track data from useEffect
-          const [characterList, setCharacterList] = useState([]);
 
-          useEffect(() => {
-        // TODO: Add API Request here - must run in `useEffect`
-        //  Important: verify the 2nd `useEffect` parameter: the dependancies array!
-        async function fetchData() {
-          try {
-            const characterList = await axios.get(
-              "https://rickandmortyapi.com/api/character/"
-            );
-            setCharacterList(characterList.data.results);
-          } catch (err) {
-            console.log(err);
-          }
-        }
-        fetchData();
-  }, []);
 
     return (
-      <div className="character-list">
-        {characterList.map(character => (
-          <div className="character-card" key={character.id}>
+      <Container className="character-list">
+        {props.chars.map(character => (
+          <Card className="character-card" key={character.id}>
              <Link to={`/character-list/${character.id}`}>
-             <h2>{character.name}</h2>
-              <img className="character-list-image" src={character.image} />
+             <Title className='title'><h2>{character.name}</h2></Title>
+              <img src={character.image} />
             </Link>            
-          </div>
+          </Card>
     ))}
-    <Route path="/character-list/:id" render={props => <CharacterCard chars={characterList} {...props} />}/>
-      </div>
+      </Container>
     );
 }
